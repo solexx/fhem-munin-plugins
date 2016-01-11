@@ -1,0 +1,96 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor battery status (ok/not ok) from FHEM
+
+=head1 CONFIGURATION
+
+No special configuration is needed.
+
+If trouble reading files, use:
+
+ [traffic]
+ user root
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+call_fhem() {
+	echo "$@" | nc -q1 localhost 7072 | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_battery_devices() {
+	call_fhem "list battery=[a-z]+"
+}
+
+get_battery_level_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", \"\") }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Battery Status (auto)
+graph_vlabel Status (0=ok, 1=low, 2=other)
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows battery status via FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_args --lower-limit 0 --upper-limit 3 --rigid
+graph_printf %6.1lf
+EOF
+	all_battery_devices | while read device; do
+		echo "${device}.label ${device}"
+		echo "${device}.warning 1:"
+		echo "${device}.critical 2:"
+	done
+
+        exit 0
+		;;
+	autoconf)
+		echo "yes"
+		exit 0
+		;;
+esac 
+
+all_battery_devices | while read device; do
+	case $(get_battery_level_from_device ${device}) in
+		ok)
+			state=0
+			;;
+		low)
+			state=1
+			;;
+		*)
+			state=2
+			;;
+	esac
+	echo "${device}.value ${state}"
+done
+
+exit 0
+
