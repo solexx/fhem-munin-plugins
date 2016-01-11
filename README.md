@@ -1,10 +1,25 @@
 ### Background
 
-If you are running FHEM with a lot of devices and want to have Munin graphs for sensor readings, it quickly becomes cumbersome and repetitive to add new graphs. A FHEM system with a little history might also use inconsistent naming which makes things confusing. These plugins aim to automatically pick up changes in your FHEM infrastructure and display new devices automatically.
+If you are running FHEM with a lot of devices and want to have Munin
+graphs for sensor readings, it quickly becomes cumbersome and repetitive
+to add new graphs. A FHEM system with a little history might also use
+inconsistent naming which makes things confusing. These plugins aim to
+automatically pick up changes in your FHEM infrastructure and display
+new devices automatically.
 
-The plugins use the `list` command of FHEM to find devices with appropriate "readings" for each plugin. That way new devices are picked up automatically and the plugins don't need to care about device names.
+The plugins use the `list` command of FHEM to find devices with
+appropriate "readings" for each plugin. That way new devices are picked
+up automatically and the plugins don't need to care about device names.
 
-I only own and test with HomeMatic devices but I guess these plugins may work for other hardware as well. 
+I only own and test with HomeMatic devices but I guess these plugins may
+work for other hardware as well. 
+
+Most of this could have also been implemented using a single [wildcard
+plugin](http://munin.readthedocs.org/en/latest/tutorial/wildcard-plugins.html).
+I opted against that in order to have nice graph configuration by
+default (data range, formatting, limits, …) and because proper device
+listing is sometimes a little tricky.
+
 
 ### Plugins
 
@@ -83,3 +98,10 @@ http://jigsaw.home.well-adjusted.de/munin/fhem_auto-week.html
 
 And a few custom graphs that only aggregate data from the default graphs:
 http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
+
+### TODO
+
+[ ] Make hostname and port of FHEM configurable. Currently
+    localhost:7072 is hard-coded everywere.
+[ ] Add a wildcard plugin where you only have to give the name of a
+    reading.
