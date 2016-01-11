@@ -1,0 +1,85 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor all battery levels from FHEM
+
+=head1 CONFIGURATION
+
+No special configuration is needed.
+
+If trouble reading files, use:
+
+ [traffic]
+ user root
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+call_fhem() {
+	echo "$@" | nc -q1 localhost 7072 | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_battery_devices() {
+	call_fhem "list batteryLevel=[0-9.]+"
+}
+
+get_battery_level_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"batteryLevel\", 0) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Battery Levels (auto)
+graph_vlabel Voltage
+graph_scale yes
+graph_category fhem_auto
+graph_info This graph shows battery levels via FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_args --lower-limit 1.9 --upper-limit 3.3 --rigid
+graph_printf %6.1lf
+EOF
+	all_battery_devices | while read device; do
+		echo "${device}.label ${device}"
+		echo "${device}.warning 2.3:"
+		echo "${device}.critical 2.1:"
+	done
+
+        exit 0
+		;;
+	autoconf)
+		echo "yes"
+		exit 0
+		;;
+esac 
+
+all_battery_devices | while read device; do
+	echo "${device}.value $(get_battery_level_from_device ${device})"
+done
+
+exit 0
+

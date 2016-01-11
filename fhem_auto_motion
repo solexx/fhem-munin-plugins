@@ -1,0 +1,90 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor motion events from FHEM
+
+=head1 CONFIGURATION
+
+No special configuration is needed.
+
+If trouble reading files, use:
+
+ [traffic]
+ user root
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+call_fhem() {
+	echo "$@" | nc -q1 localhost 7072 | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_motion_devices() {
+	call_fhem "list subType=motionDetector NAME" | awk '{ print $1 }'
+}
+
+get_motion_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"trigger_cnt\", 0) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Motions (auto)
+graph_title FHEM motions
+graph_vlabel motions
+graph_scale no
+graph_args --lower 0 --upper 20 --rigid
+graph_category fhem_auto
+graph_info This graph shows motions events from FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_printf %3.0lf
+EOF
+	all_motion_devices | while read device; do
+		echo "${device}.label ${device}"
+		echo "${device}.min 0"
+		echo "${device}.max 20"
+		echo "${device}.type COUNTER"
+	done
+
+        exit 0
+		;;
+	autoconf)
+		echo "yes"
+		exit 0
+		;;
+esac 
+
+all_motion_devices | while read device; do
+	motions=$(get_motion_from_device ${device})
+	# We need to multiply by the cron interval to get the absolute
+	# number of motions in the timeframe
+	echo "${device}.value $((motions*300))"
+done
+
+exit 0
+

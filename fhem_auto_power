@@ -1,0 +1,83 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor all power readings from FHEM
+
+=head1 CONFIGURATION
+
+No special configuration is needed.
+
+If trouble reading files, use:
+
+ [traffic]
+ user root
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+call_fhem() {
+	echo "$@" | nc -q1 localhost 7072 | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_power_devices() {
+	call_fhem "list power=[0-9.]+ NAME" | awk '{ print $1 }'
+}
+
+get_power_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"power\", -1) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Power Usage (auto)
+graph_info This graph shows power readings from FHEM
+graph_vlabel Watt
+graph_category fhem_auto
+graph_printf %4.0lf
+graph_args --lower-limit 0 --rigid
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_scale no
+EOF
+	all_power_devices | while read device; do
+		echo "${device}.label ${device}"
+	done
+
+        exit 0
+		;;
+	autoconf)
+		echo "yes"
+		exit 0
+		;;
+esac 
+
+all_power_devices | while read device; do
+	echo "${device}.value $(get_power_from_device ${device})"
+done
+
+exit 0
+
