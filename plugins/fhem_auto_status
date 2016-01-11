@@ -1,0 +1,90 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor device status from FHEM
+
+=head1 CONFIGURATION
+
+No special configuration is needed.
+
+If trouble reading files, use:
+
+ [traffic]
+ user root
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+call_fhem() {
+	echo "$@" | nc -q1 localhost 7072 | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_action_detectors() {
+	call_fhem "list model=ActionDetector NAME" | awk '{ print $1 }'
+}
+
+get_states_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"state\", 0) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Motions (auto)
+graph_title FHEM motions
+graph_vlabel devices
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows device states from FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_printf %3.0lf
+EOF
+	all_action_detectors | while read device; do
+		for state in $(get_states_from_device $device); do
+			state=${state%:*}
+			echo "${device}_${state}.label ${device}_${state}"
+		done
+	done
+
+        exit 0
+		;;
+	autoconf)
+		echo "yes"
+		exit 0
+		;;
+esac 
+
+all_action_detectors | while read device; do
+	for state in $(get_states_from_device $device); do
+		count=${state##*:}
+		state=${state%:*}
+		echo "${device}_${state}.value ${count}"
+	done
+done
+
+exit 0
+
