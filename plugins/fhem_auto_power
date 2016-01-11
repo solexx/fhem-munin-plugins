@@ -11,12 +11,12 @@ fhem_humidity_all - Plugin to automatically monitor all power readings from FHEM
 
 =head1 CONFIGURATION
 
-No special configuration is needed.
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
 
-If trouble reading files, use:
-
- [traffic]
- user root
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
 
 =head1 AUTHORS
 
