@@ -64,7 +64,7 @@ graph_category fhem_auto
 graph_info This graph shows battery status via FHEM
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_args --lower-limit 0 --upper-limit 3 --rigid
-graph_printf %6.1lf
+graph_printf %2.0lf
 EOF
 		all_battery_devices | while read device; do
 			echo "${device}.label ${device}"
