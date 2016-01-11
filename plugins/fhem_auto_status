@@ -54,8 +54,7 @@ get_states_from_device() {
 case $1 in
 	config)
         cat <<'EOF'
-graph_title FHEM Motions (auto)
-graph_title FHEM motions
+graph_title FHEM Device States (auto)
 graph_vlabel devices
 graph_scale no
 graph_category fhem_auto
