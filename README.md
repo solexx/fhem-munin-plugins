@@ -27,7 +27,7 @@ listing is sometimes a little tricky.
 - **fhem_auto_brightness** Render brightness level for all FHEM devices with a `brightness` reading.
 - **fhem_auto_dew** Render calculated dew points for devices with both a `temperature` and a `humidity` reading.
 - **fhem_auto_humidity** Render relative humidity for devices with a `humidity` reading.
-- **fhem_auto_humidity_abs** Render absolute humidity for devices with both a `temperature` and a `humidity` reading.
+- **fhem_auto_humidity_abs** Render calculated absolute humidity for devices with both a `temperature` and a `humidity` reading.
 - **fhem_auto_motion** Render derived motion events for motion detectors (`subType=motionDetector`). 
 - **fhem_auto_power** Render power usage of devices with a `power` reading.
 - **fhem_auto_temp** Render temperature readings of (root) devices with either a `temperature` or `measured-temp` reading and, in the latter case, *as long as their `channel_02` is not peered to a different device*. This avoids reporting duplicate values for HomeMatic thermostat valves that use an external temperature sensor (and possibly others).
