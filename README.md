@@ -65,7 +65,9 @@ Render valve opening positions of devices with a `ValvePosition` reading.
 
 ### Setup
 
-Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`.
+Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`. If your FHEM installation is accessible on localhost:7072 everything should work automatically. Otherwise you will have to change the `call_fhem` function in the plugins (see TODOs below).
+
+The only external dependency is netcat which is used to communicate with FHEM. The netcat binary is called as `nc` and is expected to be in `$PATH`.
 
 If you want more fancy labels or if you want to create graphs with data from several of the pre-defined graphs, you can [borrow data](http://munin-monitoring.org/wiki/LoaningData) like so in `munin.conf`:
 
@@ -103,3 +105,4 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 
 - [ ] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
 - [ ] Add a wildcard plugin where you only have to give the name of a reading.
+- [ ] Make netcat path configurable.
