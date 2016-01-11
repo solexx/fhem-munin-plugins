@@ -8,47 +8,47 @@ I only own and test with HomeMatic devices but I guess these plugins may work fo
 
 ### Plugins
 
-## fhem_auto_battery
+#### fhem_auto_battery
 
 Render voltage level for all FHEM devices with a `batteryLevel` reading.
 
-## fhem_auto_brightness
+###### fhem_auto_brightness
 
 Render brightness level for all FHEM devices with a `brightness` reading.
 
-## fhem_auto_dew
+#### fhem_auto_dew
 
 Render calculated dew points for devices with both a `temperature` and a `humidity` reading.
 
-## fhem_auto_humidity
+#### fhem_auto_humidity
 
 Render relative humidity for devices with a `humidity` reading.
 
-## fhem_auto_humidity_abs
+#### fhem_auto_humidity_abs
 
 Render absolute humidity for devices with both a `temperature` and a `humidity` reading.
 
-## fhem_auto_motion
+#### fhem_auto_motion
 
 Render derived motion events for motion detectors (`subType=motionDetector`). 
 
-## fhem_auto_power
+#### fhem_auto_power
 
 Render power usage of devices with a `power` reading.
 
-## fhem_auto_temp
+#### fhem_auto_temp
 
 Render temperature readings of (root) devices with either a `temperature` or `measured-temp` reading and, in the latter case, *as long as their `channel_02` is not peered to a different device*. This avoids reporting duplicate values for HomeMatic thermostat valves that use an external temperature sensor (and possibly others).
 
-## fhem_auto_temp_desired
+#### fhem_auto_temp_desired
 
 Render target temperatures of devices with a `desired-temp` reading.
 
-## fhem_auto_valve
+#### fhem_auto_valve
 
 Render valve opening positions of devices with a `ValvePosition` reading.
 
-## Setup
+### Setup
 
 Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`.
 
