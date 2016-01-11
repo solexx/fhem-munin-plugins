@@ -54,25 +54,27 @@ Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`.
 
 If you want more fancy labels or if you want to create graphs with data from several of the pre-defined graphs, you can [borrow data](http://munin-monitoring.org/wiki/LoaningData) like so in `munin.conf`:
 
-   [home.well-adjusted.de;FHEM]
-       use_node_name no
-       update no
-       temp_wohnzimmer.update no
-       temp_wohnzimmer.graph_title Temperaturen Wohnzimmer
-       temp_wohnzimmer.graph_args --base 1000
-       temp_wohnzimmer.graph_vlabel degrees Celsius
-       temp_wohnzimmer.graph_scale no
-       temp_wohnzimmer.graph_category fhem
-       temp_wohnzimmer.graph_printf %6.1lf
-       temp_wohnzimmer.graph_order \
-           Wohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_temp.WandTherm_Wohnzimmer \
-           TargetWohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_temp_desired.WandTherm_Wohnzimmer \
-           DewWohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_dew.Dew_WandTherm_Wohnzimmer_Weather \
-           DewAmbient=jigsaw.home.well-adjusted.de:fhem_auto_dew.Dew_THSensor_Veranda
-       temp_wohnzimmer.Wohnzimmer.label Ist-Temperatur Wohnzimmer OG
-       temp_wohnzimmer.TargetWohnzimmer.label Ziel-Temperatur Wohnzimmer
-       temp_wohnzimmer.DewWohnzimmer.label Taupunkt Wohnzimmer
-       temp_wohnzimmer.DewAmbient.label Taupunkt aussen
+```
+[home.well-adjusted.de;FHEM]
+    use_node_name no
+    update no
+    temp_wohnzimmer.update no
+    temp_wohnzimmer.graph_title Temperaturen Wohnzimmer
+    temp_wohnzimmer.graph_args --base 1000
+    temp_wohnzimmer.graph_vlabel degrees Celsius
+    temp_wohnzimmer.graph_scale no
+    temp_wohnzimmer.graph_category fhem
+    temp_wohnzimmer.graph_printf %6.1lf
+    temp_wohnzimmer.graph_order \
+        Wohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_temp.WandTherm_Wohnzimmer \
+        TargetWohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_temp_desired.WandTherm_Wohnzimmer \
+        DewWohnzimmer=jigsaw.home.well-adjusted.de:fhem_auto_dew.Dew_WandTherm_Wohnzimmer_Weather \
+        DewAmbient=jigsaw.home.well-adjusted.de:fhem_auto_dew.Dew_THSensor_Veranda
+    temp_wohnzimmer.Wohnzimmer.label Ist-Temperatur Wohnzimmer OG
+    temp_wohnzimmer.TargetWohnzimmer.label Ziel-Temperatur Wohnzimmer
+    temp_wohnzimmer.DewWohnzimmer.label Taupunkt Wohnzimmer
+    temp_wohnzimmer.DewAmbient.label Taupunkt aussen
+```
 
 ### Examples
 
