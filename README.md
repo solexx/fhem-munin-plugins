@@ -1,8 +1,9 @@
 ### Background
 
-If you are running FHEM with a lot of devices and want to have Munin
-graphs for sensor readings, it quickly becomes cumbersome and repetitive
-to add new graphs. A FHEM system with a little history might also use
+If you are running [FHEM](http://fhem.de/fhem.html) with a lot of
+devices and want to have [Munin](http://munin-monitoring.org/) graphs
+for sensor readings, it quickly becomes cumbersome and repetitive to add
+new graphs. A FHEM system with a little history might also use
 inconsistent naming which makes things confusing. These plugins aim to
 automatically pick up changes in your FHEM infrastructure and display
 new devices automatically.
@@ -67,7 +68,7 @@ If you want more fancy labels or if you want to create graphs with data from sev
 
 ### Examples
 
-Here's my setup with default graphs:
+Here's my setup with all default graphs:
 http://jigsaw.home.well-adjusted.de/munin/fhem_auto-week.html
 
 And a few custom graphs that only aggregate data from the default graphs:
