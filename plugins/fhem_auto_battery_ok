@@ -65,8 +65,8 @@ graph_printf %6.1lf
 EOF
 	all_battery_devices | while read device; do
 		echo "${device}.label ${device}"
-		echo "${device}.warning 1:"
-		echo "${device}.critical 2:"
+		echo "${device}.warning :1"
+		echo "${device}.critical :2"
 	done
 
         exit 0
