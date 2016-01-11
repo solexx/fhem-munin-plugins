@@ -24,7 +24,8 @@ listing is sometimes a little tricky.
 
 ### Plugins
 
-- **fhem_auto_battery** Render voltage level for all FHEM devices with a `batteryLevel` reading.
+- **fhem_auto_battery** Render voltage level for all FHEM devices with a `batteryLevel` reading. Warning level is set to 2.3V which should work for HomeMatic devices.
+- **fhem_auto_battery_ok** Render battery status for all FHEM devices with a `battery` reading. The states "ok", "low" are mapped to 0 or 1, all other to 2. Warning level is configured to be 1 so Munin reports low batteries correctly.
 - **fhem_auto_brightness** Render brightness level for all FHEM devices with a `brightness` reading.
 - **fhem_auto_dew** Render calculated dew points for devices with both a `temperature` and a `humidity` reading.
 - **fhem_auto_humidity** Render relative humidity for devices with a `humidity` reading.
