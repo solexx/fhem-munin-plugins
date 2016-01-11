@@ -39,7 +39,15 @@ listing is sometimes a little tricky.
 
 ### Setup
 
-Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`. If your FHEM installation is accessible on localhost:7072 everything should work automatically. Otherwise you will have to change the `call_fhem` function in the plugins (see TODOs below).
+Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`. If your FHEM installation's telnet service is accessible on localhost:7072 everything should work automatically. Otherwise you need to set `fhem_host` and `fhem_port` in your `plugins.conf`:
+
+```
+[fhem_auto_*]
+env.fhem_host fhem.example.org
+env.fhem_port 8888
+```
+
+None of the plugins need any special privileges. There is no need to run them as root.
 
 The only external dependency is netcat which is used to communicate with FHEM. The netcat binary is called as `nc` and is expected to be in `$PATH`.
 
@@ -77,6 +85,6 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 
 ### TODO
 
-- [ ] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
+- [X] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
 - [ ] Add a wildcard plugin where you only have to give the name of a reading.
 - [ ] Make netcat path configurable.

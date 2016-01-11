@@ -37,8 +37,11 @@ GPLv2
 
 =cut
 
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
 call_fhem() {
-	echo "$@" | nc -q1 localhost 7072 | while read line; do
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
 		test -n "$line" && echo "$line"
 	done
 }
@@ -63,14 +66,18 @@ graph_args --lower-limit 0 --upper-limit 100 --rigid
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %3.0lf
 EOF
-	all_valve_devices | while read device; do
-		echo "${device}.label ${device}"
-	done
+		all_valve_devices | while read device; do
+			echo "${device}.label ${device}"
+		done
 
         exit 0
 		;;
 	autoconf)
-		echo "yes"
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
 		exit 0
 		;;
 esac 
