@@ -15,13 +15,6 @@ up automatically and the plugins don't need to care about device names.
 I only own and test with HomeMatic devices but I guess these plugins may
 work for other hardware as well. 
 
-Most of this could have also been implemented using a single [wildcard
-plugin](http://munin.readthedocs.org/en/latest/tutorial/wildcard-plugins.html).
-I opted against that in order to have nice graph configuration by
-default (data range, formatting, limits, …) and because proper device
-listing is sometimes a little tricky.
-
-
 ### Plugins
 
 - **fhem_auto_battery** Render voltage level for all FHEM devices with a `batteryLevel` reading. Warning level is set to 2.3V which should work for HomeMatic devices.
@@ -36,6 +29,7 @@ listing is sometimes a little tricky.
 - **fhem_auto_temp_desired** Render target temperatures of devices with a `desired-temp` reading.
 - **fhem_auto_valve** Render valve opening positions of devices with a `ValvePosition` reading.
 - **fhem_auto_status** Render FHEM device status (alive/dead/unknown/off) for `ActionDetector` devices.
+- **fhem_auto_reading_** Wildcard plugin to render arbitrary readings without fancy device filtering or configuration. Please note that the values returned for the readings need to be numeric (integer/decimal).
 
 ### Setup
 
@@ -86,5 +80,5 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 ### TODO
 
 - [X] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
-- [ ] Add a wildcard plugin where you only have to give the name of a reading.
+- [X] Add a wildcard plugin where you only have to give the name of a reading.
 - [ ] Make netcat path configurable.
