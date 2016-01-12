@@ -60,6 +60,7 @@ case $1 in
 graph_title FHEM Device States (auto)
 graph_vlabel devices
 graph_scale no
+graph_total Total
 graph_category fhem_auto
 graph_info This graph shows device states from FHEM
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
