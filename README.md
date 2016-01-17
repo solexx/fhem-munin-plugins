@@ -86,4 +86,4 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 ### Contact
 
 For questions and support, feel free to use the Issue Tracker or drop me an
-e-mail at <js+github@wim.re.>
+e-mail at <js+github@wim.re>.
