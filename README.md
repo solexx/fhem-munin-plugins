@@ -82,3 +82,8 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 - [X] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
 - [X] Add a wildcard plugin where you only have to give the name of a reading.
 - [ ] Make netcat path configurable.
+
+### Contact
+
+For questions and support, feel free to use the Issue Tracker or drop me an
+e-mail at <js+github@wim.re.>
