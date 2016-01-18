@@ -49,8 +49,8 @@ call_fhem() {
 all_temp_devices() {
 	# filter for devices without parent device in order to avoid
 	# measuring the same thing twice
-	call_fhem "list temperature=[0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $2 }'
-	call_fhem "list measured-temp=[0-9.]+:FILTER=device!=.+ NAME" | \
+	call_fhem "list temperature=[-0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $2 }'
+	call_fhem "list measured-temp=[-0-9.]+:FILTER=device!=.+ NAME" | \
 		# skip peered devices in order to suppress dupes
 		while read device device; do
 			channel=$(call_fhem "{ InternalVal(\"${device}\", \"channel_02\", \"foo\") }")
