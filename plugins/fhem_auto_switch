@@ -1,0 +1,101 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor battery status (ok/not ok) from FHEM
+
+=head1 CONFIGURATION
+
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
+
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
+call_fhem() {
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_switch_devices() {
+	call_fhem "list state=(on|off)"
+}
+
+get_state_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"state\", \"\") }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Switch Status (auto)
+graph_vlabel Status (0=off, 1=on)
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows switch status via FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_args --lower-limit -1 --upper-limit 1 --rigid
+graph_printf %2.0lf
+EOF
+		all_switch_devices | while read device; do
+			echo "${device}.label ${device}"
+		done
+
+        exit 0
+		;;
+	autoconf)
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
+		exit 0
+		;;
+esac 
+
+all_switch_devices | while read device; do
+	case $(get_state_from_device ${device}) in
+		off)
+			state=0
+			;;
+		on)
+			state=1
+			;;
+		*)
+			state=-1
+			;;
+	esac
+	echo "${device}.value ${state}"
+done
+
+exit 0
+
