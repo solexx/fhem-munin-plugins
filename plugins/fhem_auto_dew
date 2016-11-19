@@ -131,7 +131,7 @@ esac
 all_humidity_devices | while read device; do
 	temp=$(get_temp_from_device ${device})
 	humidity=$(get_humidity_from_device ${device})
-	if [ -n "$temp ] && [ -n "$humidity" ]; then
+	if [ -n "$temp" ] && [ -n "$humidity" ]; then
 		echo "Dew_${device}.value  $(dewpoint $temp $humidity)"
 	else
 		echo "Dew_${device}.value  NaN"
