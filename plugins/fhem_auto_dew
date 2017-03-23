@@ -47,7 +47,7 @@ call_fhem() {
 }
 
 all_humidity_devices() {
-	call_fhem "list humidity=[0-9.]+:FILTER=temperature=.+"
+	call_fhem "list humidity=[0-9.]+:FILTER=temperature=.+ NAME" | awk '{ print $1 }'
 }
 
 get_temp_from_device() {

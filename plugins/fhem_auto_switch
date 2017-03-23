@@ -47,7 +47,7 @@ call_fhem() {
 }
 
 all_switch_devices() {
-	call_fhem "list state=(on|off):FILTER=TYPE!=dummy"
+	call_fhem "list state=(on|off):FILTER=TYPE!=dummy NAME" | awk '{ print $1 }'
 }
 
 get_state_from_device() {

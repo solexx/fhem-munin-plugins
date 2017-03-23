@@ -47,7 +47,7 @@ call_fhem() {
 }
 
 all_battery_devices() {
-	call_fhem "list battery=[a-z]+"
+	call_fhem "list battery=[a-z]+ NAME" | awk '{ print $1 }'
 }
 
 get_battery_level_from_device() {

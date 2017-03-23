@@ -47,9 +47,9 @@ call_fhem() {
 }
 
 all_target_temp_devices() {
-	call_fhem "list desired-temp=[0-9.]+:FILTER=device!=.+ NAME" | \
+	call_fhem "list desired-temp=[0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $1 }' | \
 		# skip peered devices in order to suppress dupes
-		while read device device; do
+		while read device; do
 			channel=$(call_fhem "{ InternalVal(\"${device}\", \"channel_02\", \"foo\") }")
 			state=$(call_fhem "{ ReadingsVal(\"${channel}\", \"state\", \"\") }")
 			if [ "$state" != "peered" ]; then
