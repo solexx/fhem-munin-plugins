@@ -114,7 +114,7 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %6.1lf
 EOF
 		all_humidity_devices | while read device; do
-			echo "Dew_${device}.label DewDiff_${device}"
+			echo "DewDiff_${device}.label ${device}"
 		done
 
         exit 0
