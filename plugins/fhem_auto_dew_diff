@@ -1,0 +1,148 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_temp - Plugin to automatically calculate the difference between
+temperatures and associated dew points from FHEM
+
+=head1 CONFIGURATION
+
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
+
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
+
+=head1 AUTHORS
+
+=over
+
+=item 2017.05.31 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
+call_fhem() {
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_humidity_devices() {
+	call_fhem "list humidity=[0-9.]+:FILTER=temperature=.+ NAME" | awk '{ print $1 }'
+}
+
+get_temp_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"measured-temp\", ReadingsVal(\"${1}\", \"temperature\", 0)) }"
+}
+
+get_humidity_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"humidity\", 0) }"
+}
+
+dewpoint() {
+	bc -l <<EOF
+tp=$1
+fw=$2
+
+scale=2
+
+define floor(x) {
+  auto os,xx;os=scale;scale=0
+  xx=x/1;if(xx>x).=xx--
+  scale=os;return(xx)
+}
+
+# Round x to the nearest multiple of y
+define round(     x,y) {
+  auto os,oib;
+  os=scale;oib=ibase
+  .=scale++;ibase=A
+  y*=floor(x/y+.5)
+  ibase=oib;scale=os
+  return y
+}
+
+a1=7.45
+b1=235
+
+tp=tp*1
+fw=fw*1
+x1=(a1*tp)/(b1+tp)
+e1=6.1*e(x1*2.3025851)
+e2=e1*fw/100
+x2=e2/6.1
+x3=0.434292289*l(x2)
+taux=(235*x3)/(7.45-x3)*100
+taux=floor(taux)/100
+feux=(216.7*e2)/(273.15+tp)*100
+feux=round(feux, 1)/100
+
+taux
+EOF
+
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Dew Point Diff to Temp (auto)
+graph_vlabel degrees Celsius
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows the difference between temperatures and dew points from FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_printf %6.1lf
+EOF
+		all_humidity_devices | while read device; do
+			echo "Dew_${device}.label DewDiff_${device}"
+		done
+
+        exit 0
+		;;
+	autoconf)
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
+		exit 0
+		;;
+esac 
+
+all_humidity_devices | while read device; do
+	temp=$(get_temp_from_device ${device})
+	humidity=$(get_humidity_from_device ${device})
+	if [ -n "$temp" ] && [ -n "$humidity" ]; then
+		dew=$(dewpoint $temp $humidity)
+		diff=$(bc <<EOF
+			$temp - $dew
+EOF
+		)
+		echo "DewDiff_${device}.value  ${diff}"
+	else
+		echo "Dew_${device}.value  NaN"
+	fi
+done
+
+exit 0
+
