@@ -54,6 +54,17 @@ get_state_from_device() {
 	call_fhem "{ ReadingsVal(\"${1}\", \"state\", \"\") }"
 }
 
+get_alias_for_device() {
+	device=$1
+	alias=$( call_fhem "list $device alias" | awk '{$1=""; print $0}' )
+
+	if [ -n "$alias" ]; then
+		echo "$alias"
+	else
+		echo "$device"
+	fi
+}
+
 case $1 in
 	config)
         cat <<'EOF'
@@ -67,7 +78,7 @@ graph_args --lower-limit -1 --upper-limit 1 --rigid
 graph_printf %2.0lf
 EOF
 		all_switch_devices | while read device; do
-			echo "${device}.label ${device}"
+			echo "${device}.label $(get_alias_for_device ${device})"
 		done
 
         exit 0
