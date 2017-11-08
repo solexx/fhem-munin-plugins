@@ -1,0 +1,89 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_humidity_all - Plugin to automatically monitor all (electrical) current readings from FHEM
+
+=head1 CONFIGURATION
+
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
+
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
+call_fhem() {
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_current_devices() {
+	call_fhem "list current=[0-9.]+ NAME" | awk '{ print $1 }'
+}
+
+get_current_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"current\", -1) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Current (auto)
+graph_info This graph shows (electrical) current readings from FHEM
+graph_vlabel Electrical current (A)
+graph_category fhem_auto
+graph_printf %4.1lf
+graph_args --base 1000
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+EOF
+		all_current_devices | while read device; do
+			echo "${device}.label ${device}"
+		done
+
+        exit 0
+		;;
+	autoconf)
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
+		exit 0
+		;;
+esac 
+
+all_current_devices | while read device; do
+	echo "${device}.value $( echo $(get_current_from_device ${device}) / 1000 | bc -l )"
+done
+
+exit 0
+
