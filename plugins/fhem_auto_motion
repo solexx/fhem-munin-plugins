@@ -61,7 +61,7 @@ graph_title FHEM Motions (auto)
 graph_title FHEM motions
 graph_vlabel motions
 graph_scale no
-graph_args --lower 0 --upper 20 --rigid
+graph_args --lower-limit 0 --upper 20 --rigid
 graph_category fhem_auto
 graph_info This graph shows motions events from FHEM
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
