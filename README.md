@@ -20,15 +20,19 @@ work for other hardware as well.
 - **fhem_auto_battery** Render voltage level for all FHEM devices with a `batteryLevel` reading. Warning level is set to 2.3V which should work for HomeMatic devices.
 - **fhem_auto_battery_ok** Render battery status for all FHEM devices with a `battery` reading. The states "ok", "low" are mapped to 0 or 1, all other to 2. Warning level is configured to be 1 so Munin reports low batteries correctly.
 - **fhem_auto_brightness** Render brightness level for all FHEM devices with a `brightness` reading.
+- **fhem_auto_current** Render (electrical) current for all FHEM devices with a `current` reading.
 - **fhem_auto_dew** Render calculated dew points for devices with both a `temperature` and a `humidity` reading.
+- **fhem_auto_energyCalc** Render power usage for devices with an `energyCalc` reading. This is a `DERIVE` graph and can be used as an alternative to `fhem_auto_power`. While the latter only shows measurements fron a specific points in time, this plugin better shows peak values because the `energyCalc` reading includes the cumulative change between measurements.
 - **fhem_auto_humidity** Render relative humidity for devices with a `humidity` reading.
 - **fhem_auto_humidity_abs** Render calculated absolute humidity for devices with both a `temperature` and a `humidity` reading.
+- **fhem_auto_frequency** Render frequency for devices with a `frequency` reading.
 - **fhem_auto_motion** Render derived motion events for motion detectors (`subType=motionDetector`). 
 - **fhem_auto_power** Render power usage of devices with a `power` reading.
 - **fhem_auto_switch** Render status of switches (attribute `state` either `on` or `off` and not a dummy).
 - **fhem_auto_temp** Render temperature readings of (root) devices with either a `temperature` or `measured-temp` reading and, in the latter case, *as long as their `channel_02` is not peered to a different device*. This avoids reporting duplicate values for HomeMatic thermostat valves that use an external temperature sensor (and possibly others).
 - **fhem_auto_temp_desired** Render target temperatures of devices with a `desired-temp` reading.
 - **fhem_auto_valve** Render valve opening positions of devices with a `ValvePosition` reading.
+- **fhem_auto_voltage** Render voltage of devices with a `voltage` reading.
 - **fhem_auto_status** Render FHEM device status (alive/dead/unknown/off) for `ActionDetector` devices.
 - **fhem_auto_reading_** Wildcard plugin to render arbitrary readings without fancy device filtering or configuration. Please note that the values returned for the readings need to be numeric (integer/decimal).
 
