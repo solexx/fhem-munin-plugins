@@ -7,7 +7,7 @@
 
 =head1 NAME
 
-fhem_humidity_all - Plugin to automatically monitor all battery levels from FHEM
+fhem_auto_battery_percentage - Plugin to automatically monitor all battery levels from FHEM
 
 =head1 CONFIGURATION
 
@@ -47,29 +47,29 @@ call_fhem() {
 }
 
 all_battery_devices() {
-	call_fhem "list batteryLevel=[0-9.]+ NAME" | awk '{ print $1 }'
+	call_fhem "llist battery=[0-9]+.% NAME" | awk '{ print $1 }'
 }
 
 get_battery_level_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"batteryLevel\", 0) }"
+	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) }"
 }
 
 case $1 in
 	config)
         cat <<'EOF'
 graph_title FHEM Battery Levels (auto)
-graph_vlabel Voltage
+graph_vlabel Percent
 graph_scale yes
 graph_category fhem_auto
-graph_info This graph shows battery levels via FHEM
+graph_info This graph shows battery levels in % via FHEM
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
-graph_args --lower-limit 1.9 --upper-limit 3.3 --rigid
+graph_args --lower-limit 0.0 --upper-limit 100 --rigid
 graph_printf %6.1lf
 EOF
 		all_battery_devices | while read device; do
 			echo "${device}.label ${device}"
-			echo "${device}.warning 2.3:"
-			echo "${device}.critical 2.1:"
+			echo "${device}.warning 40:"
+			echo "${device}.critical 20:"
 		done
 
         exit 0
