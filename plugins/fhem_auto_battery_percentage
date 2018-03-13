@@ -1,0 +1,92 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_auto_battery_percentage - Plugin to automatically monitor all battery levels from FHEM
+
+=head1 CONFIGURATION
+
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
+
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
+
+=head1 AUTHORS
+
+=over
+
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
+call_fhem() {
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_battery_devices() {
+	call_fhem "llist battery=[0-9]+.% NAME" | awk '{ print $1 }'
+}
+
+get_battery_level_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) }"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+graph_title FHEM Battery Levels (auto)
+graph_vlabel Percent
+graph_scale yes
+graph_category fhem_auto
+graph_info This graph shows battery levels in % via FHEM
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_args --lower-limit 0.0 --upper-limit 100 --rigid
+graph_printf %6.1lf
+EOF
+		all_battery_devices | while read device; do
+			echo "${device}.label ${device}"
+			echo "${device}.warning 40:"
+			echo "${device}.critical 20:"
+		done
+
+        exit 0
+		;;
+	autoconf)
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
+		exit 0
+		;;
+esac 
+
+all_battery_devices | while read device; do
+	echo "${device}.value $(get_battery_level_from_device ${device})"
+done
+
+exit 0
+
