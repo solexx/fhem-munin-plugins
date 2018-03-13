@@ -47,11 +47,11 @@ call_fhem() {
 }
 
 all_battery_devices() {
-	call_fhem "llist battery=[0-9]+.% NAME" | awk '{ print $1 }'
+	call_fhem "list battery=[0-9]+.% NAME" | awk '{ print $1 }'
 }
 
 get_battery_level_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) }"
+	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) } | awk '{ print $1 }"
 }
 
 case $1 in
