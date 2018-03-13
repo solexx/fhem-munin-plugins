@@ -51,7 +51,7 @@ all_battery_devices() {
 }
 
 get_battery_level_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) } | awk '{ print $1 }"
+	call_fhem "{ ReadingsVal(\"${1}\", \"battery\", 0) }" | awk '{ print $1 }'
 }
 
 case $1 in
