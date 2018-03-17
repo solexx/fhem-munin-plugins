@@ -51,7 +51,7 @@ all_battery_devices() {
 }
 
 get_battery_level_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"state\", 0) }" | sed -e 's/present/0.9/' -e 's/absent/0.1/' -e 's/asleep/0.4/' -e 's/gone/0.03/' -e 's/none/0.03/' | awk '{ print $1 }'
+	call_fhem "{ ReadingsVal(\"${1}\", \"state\", 0) }" | sed -e 's/present/0.9/' -e 's/absent/0.1/' -e 's/asleep/0.4/' -e 's/gone/0.03/' -e 's/none/0.03/' -e 's/home/1/'| awk '{ print $1 }'
 }
 
 case $1 in
