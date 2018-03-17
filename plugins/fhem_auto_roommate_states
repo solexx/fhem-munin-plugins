@@ -61,7 +61,7 @@ graph_title FHEM Residents status including roommates and guests
 graph_vlabel state
 graph_scale yes
 graph_category fhem_auto
-graph_info This graph shows the  state (present, absent, asleep) of the guests and roommates
+graph_info This graph shows the  state (present, absent, asleep) of the guests and roommates, where the states are represented by different values: 0.9: home, 0.4: asleep, 0.1: absent, 0.03: gone or none (for guests)
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_args --lower-limit 0.0 --upper-limit 1 --rigid
 graph_printf %6.1lf
