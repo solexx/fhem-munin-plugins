@@ -30,7 +30,7 @@ work for other hardware as well.
 - **fhem_auto_power** Render power usage of devices with a `power` reading.
 - **fhem_auto_switch** Render status of switches (attribute `state` either `on` or `off` and not a dummy).
 - **fhem_auto_temp** Render temperature readings of (root) devices with either a `temperature` or `measured-temp` reading and, in the latter case, *as long as their `channel_02` is not peered to a different device*. This avoids reporting duplicate values for HomeMatic thermostat valves that use an external temperature sensor (and possibly others).
-- **fhem_auto_temp_desired** Render target temperatures of devices with a `desired-temp` reading.
+- **fhem_auto_temp_desired** Render target temperatures of devices with either a `desired-temp` or a `setpointTemp` reading.
 - **fhem_auto_valve** Render valve opening positions of devices with a `ValvePosition` reading.
 - **fhem_auto_voltage** Render voltage of devices with a `voltage` reading.
 - **fhem_auto_status** Render FHEM device status (alive/dead/unknown/off) for `ActionDetector` devices.
