@@ -1,0 +1,142 @@
+#!/bin/bash
+# -*- bash -*-
+
+#set -x
+
+: << =cut
+
+=head1 NAME
+
+fhem_auto_valve_multi - Plugin to automatically monitor all (thermostat) valve positions from FHEM
+
+=head1 CONFIGURATION
+
+If your FHEM server's telnet service does not listen on localhost:7072, set it
+like so in plugin.conf:
+
+ [fhem_auto_*]
+ env.fhem_host fhem.example.org
+ env.fhem_port 8888
+
+=head1 AUTHORS
+
+=over
+
+=item 2018.03.28 Cloned from fhem_auto_valve for a new multigraph plugin with one graph per room
+=item 2018.03.17 added functionality to get the valve positions from enocean devices too
+=item 2016.01.10 Initial version by Jochen Spieker <jrspieker@well-adjusted.de>
+
+=back
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+fhem_host=${fhem_host:-localhost}
+fhem_port=${fhem_port:-7072}
+
+call_fhem() {
+	echo "$@" | nc -q1 "$fhem_host" "$fhem_port" | while read line; do
+		test -n "$line" && echo "$line"
+	done
+}
+
+all_valve_devices() {
+	(
+		call_fhem "list ValvePosition=[0-9.]+ room" | awk '{ print $1 }'
+		call_fhem "list setpoint=[0-9.]+:FILTER=TYPE=EnOcean room" | awk '{ print $1 }'
+	) | sort -k2
+}
+
+all_valve_rooms() {
+	(
+		call_fhem "list ValvePosition=[0-9.]+ room" | awk '{ print $2 }'
+		call_fhem "list setpoint=[0-9.]+:FILTER=TYPE=EnOcean room" | awk '{ print $2 }'
+	) | sort -u
+}
+
+get_valve_position_from_device() {
+	call_fhem "{ ReadingsVal(\"${1}\", \"ValvePosition\", ReadingsVal(\"$1\", \"setpoint\", -1)) }"
+}
+
+get_room_for_device() {
+	call_fhem "displayattr $1 room"
+}
+
+get_valve_devices_for_room() {
+	call_fhem "list room=${1}:FILTER=ValvePosition=[0-9.]+"
+}
+
+case $1 in
+	config)
+        cat <<'EOF'
+multigraph fhem_auto_valve_multi
+graph_title FHEM Thermostat Valve Positions (auto, multi)
+graph_vlabel Percent
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows thermostat valve states via FHEM
+graph_args --lower-limit 0 --upper-limit 100 --rigid
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_printf %3.0lf
+EOF
+
+		all_valve_devices | while read device; do
+			echo "${device}.label ${device}"
+		done
+
+		echo
+		all_valve_rooms | while read room; do
+			cat <<EOF
+
+multigraph fhem_auto_valve_multi.valve_${room}
+graph_title FHEM Thermostat Valve Positions ${room} (auto)
+graph_vlabel Percent
+graph_scale no
+graph_category fhem_auto
+graph_info This graph shows thermostat valve states via FHEM
+graph_args --lower-limit 0 --upper-limit 100 --rigid
+graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
+graph_printf %3.0lf
+EOF
+			#echo "multigraph fhem_auto_valve_multi.valve_${room}"
+			get_valve_devices_for_room "${room}" | while read device; do
+				echo "${device}.label ${device}"
+			done
+		done
+
+        exit 0
+		;;
+	autoconf)
+		if echo "quit" | nc -q1 "$fhem_host" "$fhem_port" > /dev/null 2>&1 ; then
+			echo "yes"
+		else
+			echo "no (Connection to ${fhem_host}:${fhem_port} failed.)"
+		fi
+		exit 0
+		;;
+esac 
+
+
+echo "multigraph fhem_auto_valve_multi"
+all_valve_devices | while read device; do
+		echo "${device}.value $(get_valve_position_from_device ${device})"
+done
+
+all_valve_rooms | while read room; do
+	echo
+	echo "multigraph fhem_auto_valve_multi.valve_${room}"
+	get_valve_devices_for_room "${room}" | while read device; do
+		echo "${device}.value $(get_valve_position_from_device ${device})"
+	done
+done
+
+exit 0
+
