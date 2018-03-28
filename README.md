@@ -37,6 +37,11 @@ work for other hardware as well.
 - **fhem_auto_status** Render FHEM device status (alive/dead/unknown/off) for `ActionDetector` devices.
 - **fhem_auto_reading_** Wildcard plugin to render arbitrary readings without fancy device filtering or configuration. Please note that the values returned for the readings need to be numeric (integer/decimal).
 
+I also started to add
+[multigraph](http://guide.munin-monitoring.org/en/latest/plugin/multigraphing.html)
+variants for existing plugins, the first one being
+*fhem_auto_valve_multi*. Grouping is currently done by room.
+
 ### Setup
 
 Just drop the plugins into `/etc/munin/plugins` and restart `munin-node`. If your FHEM installation's telnet service is accessible on localhost:7072 everything should work automatically. Otherwise you need to set `fhem_host` and `fhem_port` in your `plugins.conf`:
@@ -88,6 +93,8 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 - [X] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
 - [X] Add a wildcard plugin where you only have to give the name of a reading.
 - [ ] Make netcat path configurable.
+- [ ] Add more multigraph variants
+- [ ] Refactor common code (patterns) into external file.
 
 ### Contact
 
