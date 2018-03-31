@@ -32,11 +32,16 @@ work for other hardware as well.
 - **fhem_auto_resident_state** Renders the state of the residents (`ROOMMATE` and `GUEST`).
 - **fhem_auto_switch** Render status of switches (attribute `state` either `on` or `off` and not a dummy).
 - **fhem_auto_temp** Render temperature readings of (root) devices with either a `temperature` or `measured-temp` reading and, in the latter case, *as long as their `channel_02` is not peered to a different device*. This avoids reporting duplicate values for HomeMatic thermostat valves that use an external temperature sensor (and possibly others).
-- **fhem_auto_temp_desired** Render target temperatures of devices with a `desired-temp` reading.
+- **fhem_auto_temp_desired** Render target temperatures of devices with either a `desired-temp` or a `setpointTemp` reading.
 - **fhem_auto_valve** Render valve opening positions of devices with a `ValvePosition` reading.
 - **fhem_auto_voltage** Render voltage of devices with a `voltage` reading.
 - **fhem_auto_status** Render FHEM device status (alive/dead/unknown/off) for `ActionDetector` devices.
 - **fhem_auto_reading_** Wildcard plugin to render arbitrary readings without fancy device filtering or configuration. Please note that the values returned for the readings need to be numeric (integer/decimal).
+
+I also started to add
+[multigraph](http://guide.munin-monitoring.org/en/latest/plugin/multigraphing.html)
+variants for existing plugins, the first one being
+*fhem_auto_valve_multi*. Grouping is currently done by room.
 
 ### Setup
 
@@ -89,6 +94,8 @@ http://jigsaw.home.well-adjusted.de/munin/home.well-adjusted.de/FHEM/index.html
 - [X] Make hostname and port of FHEM configurable. Currently localhost:7072 is hard-coded everywere.
 - [X] Add a wildcard plugin where you only have to give the name of a reading.
 - [ ] Make netcat path configurable.
+- [ ] Add more multigraph variants
+- [ ] Refactor common code (patterns) into external file.
 
 ### Contact
 

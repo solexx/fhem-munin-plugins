@@ -18,7 +18,12 @@ like so in plugin.conf:
  env.fhem_host fhem.example.org
  env.fhem_port 8888
 
-For plotting the EnOcean specific valve positions you should make shure, that you don't have the older readings "desired-temp" in your devices. These readings where used until approximately 2016 and may still reside in the list of your readings, but are not being actualised for a very long time. If so, you must delete these readings via the FHEM command "deletereading <devspec> <readingname>". See more in the FHEM commandref.
+For plotting the EnOcean specific valve positions you should make sure, that you
+don't have the older readings "desired-temp" in your devices. These readings 
+were used until approximately 2016 and may still reside in the list of your
+readings, but are not being actualised for a very long time. If so, you must
+delete these readings via the FHEM command "deletereading <devspec>
+<readingname>".  See more in the FHEM commandref.
 
 =head1 AUTHORS
 
@@ -50,7 +55,7 @@ call_fhem() {
 }
 
 all_target_temp_devices() {
-  call_fhem "list setpointTemp=[0-9.]+:FILTER=TYPE=EnOcean NAME" | awk '{ print $1 }'
+	call_fhem "list setpointTemp=[0-9.]+:FILTER=TYPE=EnOcean NAME" | awk '{ print $1 }'
 	call_fhem "list desired-temp=[0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $1 }' | \
 		# skip peered devices in order to suppress dupes
 		while read device; do
