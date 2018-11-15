@@ -56,6 +56,7 @@ call_fhem() {
 
 all_target_temp_devices() {
 	call_fhem "list setpointTemp=[0-9.]+:FILTER=TYPE=EnOcean NAME" | awk '{ print $1 }'
+	call_fhem "list desiredTemperature=[0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $1 }'
 	call_fhem "list desired-temp=[0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $1 }' | \
 		# skip peered devices in order to suppress dupes
 		while read device; do
@@ -68,7 +69,7 @@ all_target_temp_devices() {
 }
 
 get_target_temp_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"desired-temp\", ReadingsVal(\"${1}\", \"setpointTemp\", 0)) }"
+	call_fhem "{ ReadingsVal(\"${1}\", \"desiredTemperature\", ReadingsVal(\"${1}\", \"setpointTemp\", ReadingsVal(\"${1}\", \"desired-temp\", 0))) }"
 }
 
 case $1 in
@@ -83,7 +84,10 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %6.1lf
 EOF
 		all_target_temp_devices | while read device; do
-			echo "${device}.label ${device}"
+			# replace points in device names by underscore,
+			# otherwise munin cannot handle the device name
+			devname="`echo "$device" | tr '[.]' '_'`"
+			echo "${devname}.label ${device}"
 		done
 
         exit 0
@@ -99,7 +103,8 @@ EOF
 esac 
 
 all_target_temp_devices | while read device; do
-	echo "${device}.value $(get_target_temp_from_device ${device})"
+	devname="`echo "$device" | tr '[.]' '_'`"
+	echo "${devname}.value $(get_target_temp_from_device ${device})"
 done
 
 exit 0

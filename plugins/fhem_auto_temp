@@ -78,7 +78,10 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %6.1lf
 EOF
 		all_temp_devices | while read device; do
-			echo "${device}.label ${device}"
+			# replace points in device names by underscore,
+			# otherwise munin cannot handle the device name
+			devname="`echo "$device" | tr '[.]' '_'`"
+			echo "${devname}.label ${device}"
 		done
 
         exit 0
@@ -94,7 +97,8 @@ EOF
 esac 
 
 all_temp_devices | while read device; do
-	echo "${device}.value $(get_temp_from_device ${device})"
+	devname="`echo "$device" | tr '[.]' '_'`"
+	echo "${devname}.value $(get_temp_from_device ${device})"
 done
 
 exit 0

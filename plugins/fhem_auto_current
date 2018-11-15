@@ -66,7 +66,10 @@ graph_args --base 1000
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 EOF
 		all_current_devices | while read device; do
-			echo "${device}.label ${device}"
+			# replace points in device names by underscore,
+			# otherwise munin cannot handle the device name
+			devname="`echo "$device" | tr '[.]' '_'`"
+			echo "${devname}.label ${devname}"
 		done
 
         exit 0
@@ -82,7 +85,8 @@ EOF
 esac 
 
 all_current_devices | while read device; do
-	echo "${device}.value $( echo $(get_current_from_device ${device}) / 1000 | bc -l )"
+	devname="`echo "$device" | tr '[.]' '_'`"
+	echo "${devname}.value $( echo $(get_current_from_device ${device}) / 1000 | bc -l )"
 done
 
 exit 0
