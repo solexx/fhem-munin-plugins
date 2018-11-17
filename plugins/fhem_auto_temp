@@ -53,8 +53,12 @@ all_temp_devices() {
 	call_fhem "list measured-temp=[-0-9.]+:FILTER=device!=.+ NAME" | awk '{ print $1 }' | \
 		# skip peered devices in order to suppress dupes
 		while read device; do
-			channel=$(call_fhem "{ InternalVal(\"${device}\", \"channel_02\", \"foo\") }")
-			state=$(call_fhem "{ ReadingsVal(\"${channel}\", \"state\", \"\") }")
+			# for Homematic thermostats, we need to get the device from channel_02
+			model=$(call_fhem "{ AttrVal(\"${device}\", \"model\", \"foo\") }")
+			if [ "${model}" == "HM-CC-RT-DN" ]; then
+				device=$(call_fhem "{ InternalVal(\"${device}\", \"channel_02\", \"foo\") }")
+			fi
+			state=$(call_fhem "{ ReadingsVal(\"${device}\", \"state\", \"\") }")
 			if [ "$state" != "peered" ]; then
 				echo "$device"
 			fi
