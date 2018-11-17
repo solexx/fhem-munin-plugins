@@ -68,7 +68,7 @@ EOF
 		all_voltage_devices | while read device; do
 			# replace points in device names by underscore,
 			# otherwise munin cannot handle the device name
-			devname="`echo "$device" | tr '[.]' '_'`"
+			devname="$(echo "$device" | tr '[.]' '_')"
 			echo "${devname}.label ${device}"
 		done
 
@@ -85,7 +85,7 @@ EOF
 esac 
 
 all_voltage_devices | while read device; do
-	devname="`echo "$device" | tr '[.]' '_'`"
+	devname="$(echo "$device" | tr '[.]' '_')"
 	echo "${devname}.value $(get_voltage_from_device ${device})"
 done
 

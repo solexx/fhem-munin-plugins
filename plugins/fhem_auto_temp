@@ -97,7 +97,7 @@ EOF
 esac 
 
 all_temp_devices | while read device; do
-	devname="`echo "$device" | tr '[.]' '_'`"
+	devname="$(echo "$device" | tr '[.]' '_')"
 	echo "${devname}.value $(get_temp_from_device ${device})"
 done
 

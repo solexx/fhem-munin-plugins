@@ -68,7 +68,7 @@ EOF
 		all_current_devices | while read device; do
 			# replace points in device names by underscore,
 			# otherwise munin cannot handle the device name
-			devname="`echo "$device" | tr '[.]' '_'`"
+			devname="$(echo "$device" | tr '[.]' '_')"
 			echo "${devname}.label ${devname}"
 		done
 
@@ -85,7 +85,7 @@ EOF
 esac 
 
 all_current_devices | while read device; do
-	devname="`echo "$device" | tr '[.]' '_'`"
+	devname="$(echo "$device" | tr '[.]' '_')"
 	echo "${devname}.value $( echo $(get_current_from_device ${device}) / 1000 | bc -l )"
 done
 
