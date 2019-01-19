@@ -62,7 +62,7 @@ graph_info This graph shows frequency readings from FHEM
 graph_vlabel Frequency (Hz)
 graph_category fhem_auto
 graph_printf %4.1lf
-graph_args --base 1000 --lower-limit 49.8 --upper-limit 50.2 --rigid --left-axis-format %2.2lf
+graph_args --base 1000 --lower-limit 49.8 --upper-limit 50.2 --rigid --left-axis-format %1.1lf
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 EOF
 		all_frequency_devices | while read device; do
