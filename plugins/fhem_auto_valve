@@ -69,8 +69,6 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %3.0lf
 EOF
 		all_valve_devices | while read device; do
-			# replace points in device names by underscore,
-			# otherwise munin cannot handle the device name
 			devname="$(echo "$device" | tr '[.]' '_')"
 			echo "${devname}.label ${device}"
 		done

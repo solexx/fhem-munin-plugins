@@ -66,8 +66,6 @@ graph_args --base 1000
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 EOF
 		all_voltage_devices | while read device; do
-			# replace points in device names by underscore,
-			# otherwise munin cannot handle the device name
 			devname="$(echo "$device" | tr '[.]' '_')"
 			echo "${devname}.label ${device}"
 		done

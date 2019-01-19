@@ -76,7 +76,8 @@ graph_printf %4.0lf
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 EOF
 		all_devices | while read device; do
-			echo "${device}.label ${device}"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label ${device}"
 		done
 
         exit 0
@@ -92,7 +93,8 @@ EOF
 esac 
 
 all_devices | while read device; do
-	echo "${device}.value $(get_value_from_device ${device})"
+	devname="$(echo "$device" | tr '[.]' '_')"
+	echo "${devname}.value $(get_value_from_device ${device})"
 done
 
 exit 0

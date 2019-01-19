@@ -67,9 +67,10 @@ graph_args --lower-limit 0.0 --upper-limit 100 --rigid
 graph_printf %6.1lf
 EOF
 		all_battery_devices | while read device; do
-			echo "${device}.label ${device}"
-			echo "${device}.warning 40:"
-			echo "${device}.critical 20:"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label ${device}"
+			echo "${devname}.warning 40:"
+			echo "${devname}.critical 20:"
 		done
 
         exit 0
@@ -85,7 +86,8 @@ EOF
 esac 
 
 all_battery_devices | while read device; do
-	echo "${device}.value $(get_battery_level_from_device ${device})"
+	devname="$(echo "$device" | tr '[.]' '_')"
+	echo "${devname}.value $(get_battery_level_from_device ${device})"
 done
 
 exit 0

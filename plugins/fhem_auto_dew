@@ -113,7 +113,8 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %6.1lf
 EOF
 		all_humidity_devices | while read device; do
-			echo "Dew_${device}.label ${device}"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "Dew_${devname}.label ${device}"
 		done
 
         exit 0
@@ -131,10 +132,11 @@ esac
 all_humidity_devices | while read device; do
 	temp=$(get_temp_from_device ${device})
 	humidity=$(get_humidity_from_device ${device})
+	devname="$(echo "$device" | tr '[.]' '_')"
 	if [ -n "$temp" ] && [ -n "$humidity" ]; then
-		echo "Dew_${device}.value  $(dewpoint $temp $humidity)"
+		echo "Dew_${devname}.value  $(dewpoint $temp $humidity)"
 	else
-		echo "Dew_${device}.value  NaN"
+		echo "Dew_${devname}.value  NaN"
 	fi
 done
 

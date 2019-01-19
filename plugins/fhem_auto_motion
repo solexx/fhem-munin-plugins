@@ -68,10 +68,11 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %3.0lf
 EOF
 		all_motion_devices | while read device; do
-			echo "${device}.label ${device}"
-			echo "${device}.min 0"
-			echo "${device}.max 20"
-			echo "${device}.type COUNTER"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label ${device}"
+			echo "${devname}.min 0"
+			echo "${devname}.max 20"
+			echo "${devname}.type COUNTER"
 		done
 
         exit 0
@@ -88,9 +89,10 @@ esac
 
 all_motion_devices | while read device; do
 	motions=$(get_motion_from_device ${device})
+	devname="$(echo "$device" | tr '[.]' '_')"
 	# We need to multiply by the cron interval to get the absolute
 	# number of motions in the timeframe
-	echo "${device}.value $((motions*300))"
+	echo "${devname}.value $((motions*300))"
 done
 
 exit 0

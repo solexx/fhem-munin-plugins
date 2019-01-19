@@ -66,9 +66,10 @@ graph_args --base 1000
 graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 EOF
 		all_energyCalc_devices | while read device; do
-			echo "${device}.label ${device}"
-			echo "${device}.min 0"
-			echo "${device}.type DERIVE"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label ${device}"
+			echo "${devname}.min 0"
+			echo "${devname}.type DERIVE"
 		done
 
         exit 0
@@ -87,7 +88,8 @@ all_energyCalc_devices | while read device; do
 	# we need to round to int for DERIVE
 	LC_ALL=C
 	energy=$( echo "3600 * $(get_energyCalc_from_device ${device})" | bc )
-	echo "${device}.value $(/usr/bin/printf '%.0f' ${energy})"
+	devname="$(echo "$device" | tr '[.]' '_')"
+	echo "${devname}.value $(/usr/bin/printf '%.0f' ${energy})"
 done
 
 exit 0

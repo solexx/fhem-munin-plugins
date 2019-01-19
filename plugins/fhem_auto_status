@@ -67,9 +67,10 @@ graph_data_size custom 7d, 30m for 30d, 2h for 365d, 1d for 3650d
 graph_printf %3.0lf
 EOF
 		all_action_detectors | while read device; do
+			devname="$(echo "$device" | tr '[.]' '_')"
 			for state in $(get_states_from_device $device); do
 				state=${state%:*}
-				echo "${device}_${state}.label ${device}_${state}"
+				echo "${devname}_${state}.label ${device}_${state}"
 			done
 		done
 
@@ -86,10 +87,11 @@ EOF
 esac 
 
 all_action_detectors | while read device; do
+	devname="$(echo "$device" | tr '[.]' '_')"
 	for state in $(get_states_from_device $device); do
 		count=${state##*:}
 		state=${state%:*}
-		echo "${device}_${state}.value ${count}"
+		echo "${devname}_${state}.value ${count}"
 	done
 done
 

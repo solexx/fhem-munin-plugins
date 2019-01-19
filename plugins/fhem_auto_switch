@@ -78,7 +78,8 @@ graph_args --lower-limit -1 --upper-limit 1 --rigid
 graph_printf %2.0lf
 EOF
 		all_switch_devices | while read device; do
-			echo "${device}.label $(get_alias_for_device ${device})"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label $(get_alias_for_device ${device})"
 		done
 
         exit 0
@@ -105,7 +106,8 @@ all_switch_devices | while read device; do
 			state=-1
 			;;
 	esac
-	echo "${device}.value ${state}"
+	devname="$(echo "$device" | tr '[.]' '_')"
+	echo "${devname}.value ${state}"
 done
 
 exit 0

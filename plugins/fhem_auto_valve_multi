@@ -89,7 +89,8 @@ graph_printf %3.0lf
 EOF
 
 		all_valve_devices | while read device; do
-			echo "${device}.label ${device}"
+			devname="$(echo "$device" | tr '[.]' '_')"
+			echo "${devname}.label ${device}"
 		done
 
 		echo
@@ -127,14 +128,16 @@ esac
 
 echo "multigraph fhem_auto_valve_multi"
 all_valve_devices | while read device; do
-		echo "${device}.value $(get_valve_position_from_device ${device})"
+		devname="$(echo "$device" | tr '[.]' '_')"
+		echo "${devname}.value $(get_valve_position_from_device ${device})"
 done
 
 all_valve_rooms | while read room; do
 	echo
 	echo "multigraph fhem_auto_valve_multi.valve_${room}"
 	get_valve_devices_for_room "${room}" | while read device; do
-		echo "${device}.value $(get_valve_position_from_device ${device})"
+		devname="$(echo "$device" | tr '[.]' '_')"
+		echo "${devname}.value $(get_valve_position_from_device ${device})"
 	done
 done
 
