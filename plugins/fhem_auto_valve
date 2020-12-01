@@ -48,12 +48,12 @@ call_fhem() {
 }
 
 all_valve_devices() {
-	call_fhem "list valveposition=[0-9.]+ NAME" | awk '{ print $1 }'
+	call_fhem "list ValvePosition=[0-9.]+ NAME" | awk '{ print $1 }'
 	call_fhem "list setpoint=[0-9.]+:FILTER=TYPE=EnOcean NAME" | awk '{ print $1 }'
 }
 
 get_valve_position_from_device() {
-	call_fhem "{ ReadingsVal(\"${1}\", \"valveposition\", ReadingsVal(\"$1\", \"setpoint\", -1)) }"
+	call_fhem "{ ReadingsVal(\"${1}\", \"ValvePosition\", ReadingsVal(\"$1\", \"setpoint\", -1)) }"
 }
 
 case $1 in
