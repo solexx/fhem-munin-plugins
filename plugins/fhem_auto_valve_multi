@@ -59,7 +59,7 @@ all_valve_rooms() {
 	(
 		call_fhem "list ValvePosition=[0-9.]+ room" | awk '{ print $2 }'
 		call_fhem "list setpoint=[0-9.]+:FILTER=TYPE=EnOcean room" | awk '{ print $2 }'
-	) | sort -u
+	) | cut -d, -f1 | sort -u
 }
 
 get_valve_position_from_device() {
