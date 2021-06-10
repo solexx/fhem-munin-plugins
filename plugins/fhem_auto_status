@@ -47,7 +47,7 @@ call_fhem() {
 }
 
 all_action_detectors() {
-	call_fhem "list model=ActionDetector NAME" | awk '{ print $1 }'
+	call_fhem "list model=ACTIONDETECTOR NAME" | awk '{ print $1 }'
 }
 
 get_states_from_device() {
