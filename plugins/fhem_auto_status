@@ -70,7 +70,7 @@ EOF
 			devname="$(echo "$device" | tr '[.]' '_')"
 			for state in $(get_states_from_device $device); do
 				state=${state%:*}
-				echo "${devname}_${state}.label ${device}_${state}"
+				echo "${devname}_${state}.label ${state}"
 			done
 		done
 
